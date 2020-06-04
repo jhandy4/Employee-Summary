@@ -56,30 +56,48 @@ const render = require("./lib/htmlRenderer");
             default: "",
             message: "What is your office number?",
             
-        },
+        }
+    ]
+
+    const additionalEmployee = [
         {
-            type: "confirm",
+            type: "list",
             name: "addEmployee",
             message: "Would you like to add another employee?",
+            choices: [
+                "yes",
+                "no"
+            ]
         }
-        ];
+    ]
     
-    
+    function addEmployee () {
+        inquirer.prompt(additionalEmployee).then(function(data) {
+            if ("addEmployee" === "yes") {
+                employeeQuestions()
+            }else {
+            newHTML();
+            }
+    })
+
+    }
     function newEmployee() {
         inquirer.prompt(employeeQuestions).then(function(data) {
-            let newEmployee;
-            newEmployee = new Engineer || new Intern || new Manager;
+            let newEmployee = new Engineer || new Intern || new Manager;
             employees.push(newEmployee);
-            // keeps saying push is not a function at render
-
-            
-            template = render(employees);
-            fs.writeFile(outputPath, teamHTML, err => {
-                if (err) throw err;
-                    console.log("Team Built!")
-            })
+            addEmployee();
         })
-        }   
-        
+    }
+            // need to feed main.html/$teamHTMLtemplate into outputPath
+    function newHTML () {
+        // const teamHTML = fs.readFileSync("templates/main.html");
+        // teamHTML = render(employees);
+        fs.writeFileSync(outputPath, render(employees)), function (err) {
+            if (err) {
+                throw err;
+            }
+        console.log("Team Built")
+    }
+}
 
 newEmployee();
